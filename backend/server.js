@@ -11,35 +11,36 @@ connectDB();
 
 const app = express();
 
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const PORT = process.env.PORT || 5000;
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+// CORS
 app.use(
   cors({
-    origin: [
-      "https://assignment-ready-to-record.vercel.app",
-      "http://localhost:5173"
-    ],
+    origin: [CLIENT_URL, "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://assignment-ready-to-record.vercel.app");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
 
-
-// Handle preflight requests
-app.options("*", cors());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Base route
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Backend running successfully",
+    clientURL: CLIENT_URL,
+  });
+});
+
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on port ${PORT}\n🧭 Client: ${CLIENT_URL}`)
+);
