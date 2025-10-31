@@ -14,8 +14,7 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await register(form);
-      localStorage.setItem("token", res.data.token);
+      await register(form);
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.msg || "Registration failed");

@@ -1,8 +1,8 @@
 import React from "react";
-import { AuthProvider } from "../components/AuthContext";
+import useAuth from "../context/useAuth";
 
 export default function Profile() {
-  const { user, loading } = AuthProvider();
+  const { user, loading } = useAuth();
 
   if (loading)
     return (

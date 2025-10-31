@@ -15,14 +15,7 @@ const API = axios.create({
 // =======================
 // Request interceptor: attach JWT (if localStorage token exists)
 // =======================
-API.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+API.interceptors.request.use((config) => config);
 
 // =======================
 // Response interceptor: global error handler
@@ -30,23 +23,13 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response) {
-      // Handle 401 Unauthorized globally
-      if (error.response.status === 401) {
-        localStorage.removeItem("token");
-        console.warn("Session expired — redirecting to login...");
-        // Optionally redirect to login
-        // window.location.href = "/login";
-      }
-
-      console.error(
-        `API Error (${error.response.status}):`,
-        error.response.data?.message || error.message
-      );
-    } else {
+    if (error.response?.status === 401) {
+      console.warn("Session expired — redirecting to login...");
+      // Optional: redirect
+      // window.location.href = "/login";
+    } else if (error.message) {
       console.error("Network/Server Error:", error.message);
     }
-
     return Promise.reject(error);
   }
 );
